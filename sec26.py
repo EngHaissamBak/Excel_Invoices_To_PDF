@@ -24,10 +24,7 @@ print(pathfiles)
 for filepath in pathfiles:
     # print the files inside the pathlist
     print(filepath)
-    # we read data for each iteration filepath and get data for each excel file
-    datafile = pd.read_excel(filepath, sheet_name="Sheet 1")
-    # print the contents of each excel file
-    print(datafile)
+
 
     # to create a pdf object for each file
     pdf = FPDF(orientation="P", unit="mm", format="A4")
@@ -53,11 +50,46 @@ for filepath in pathfiles:
     print(date)
 
     pdf.set_font(family="Times",size=16, style="B")
-    pdf.cell(w=50, h=8, txt=f"Invoice nr. {invoice_nr} ", ln=1,border=0)
+    pdf.cell(w=50, h=8, txt=f"Invoice nr. {invoice_nr} ", ln=2,border=0)
 
     # to write the date : Date 2023.1.18
     pdf.set_font(family="Times",size=16, style="B")
-    pdf.cell(w=50, h=8, txt=f"Date {date} ", ln=1,border=0)
+    pdf.cell(w=50, h=8, txt=f"Date {date} ", ln=2, border=0)
+
+    # adding cells to the pdf and the data from excel files
+    # we read data for each iteration filepath and get data for each excel file
+    datafile = pd.read_excel(filepath, sheet_name="Sheet 1")
+    # print the contents of each excel file
+    print(datafile)
+
+    # Add Header
+    # to create the header of the table from the columns name of excel file
+    # we get the columns from data file and convert them to a list
+    col = list(datafile.columns)
+    # we use list comprehension to replace the _ with space and capitalize the elements
+    col = [item.replace("_", " ").title() for item in col]
+    print(col)
+    pdf.set_font(family="Times", style="B", size=10)
+    pdf.set_text_color(0, 0, 0)
+    pdf.cell(w=30, h=8, txt=col[0], align="C", border=1)
+    pdf.cell(w=50, h=8, txt=col[1], align="C", border=1)
+    pdf.cell(w=50, h=8, txt=col[2], align="C", border=1)
+    pdf.cell(w=30, h=8, txt=col[3], align="C", border=1)
+    pdf.cell(w=30, h=8, txt=col[4], align="C", border=1, ln=1)
+
+    # Add Rows generating the table cells rows in pdf
+    for index, row in datafile.iterrows():
+        pdf.set_font(family="Times", size=10)
+        pdf.set_text_color(80,80,80)
+        pdf.cell(w=30, h=8, txt=str(row["product_id"]), align="C", border=1)
+        pdf.cell(w=50, h=8, txt=str(row["product_name"]), align="C",border=1)
+        pdf.cell(w=50, h=8, txt=str(row["amount_purchased"]),align="C", border=1)
+        pdf.cell(w=30, h=8, txt=str(row["price_per_unit"]), align="C",border=1)
+        pdf.cell(w=30, h=8, txt=str(row["total_price"]), align="C", ln=1, border=1)
+        # i use ln=1 for the last one inorder for the other row to start on new line after the last cell of 1st row
+        # align="C" means center
+        # i use str() to convert the read data which is integer from excel into string , because fpdf deals
+        # with strings , if i do not convert it will result in an error.
 
     # generating pdf file for each excel file
     pdf.output(f"PDFS/{filename}.pdf")
