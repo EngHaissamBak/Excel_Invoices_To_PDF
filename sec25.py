@@ -42,6 +42,10 @@ for filepath in pathfiles:
     invoice_nr = splitted_data[0]    # take the element at index 0 = 10001
     date = splitted_data[1]          # take the element at index 1 = 2023.1.18
 
+    # printing to check
+    print(invoice_nr)
+    print(date)
+
     pdf.set_font(family="Times",size=16, style="B")
     pdf.cell(w=50, h=8, txt=f"Invoice nr. {invoice_nr} ", ln=1,border=0)
 
