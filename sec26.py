@@ -1,4 +1,4 @@
-# sec 26 Excel to PDF
+# sec 26 Excel to PDF (read table rows and put header and calculate total price)
 # continuing the sec 25 exercise
 
 # To create a pattern for the file paths
@@ -90,6 +90,33 @@ for filepath in pathfiles:
         # align="C" means center
         # i use str() to convert the read data which is integer from excel into string , because fpdf deals
         # with strings , if i do not convert it will result in an error.
+
+    # Calculate total price and add it to a new row in last cell under total price
+    total_sum = datafile["total_price"].sum()
+    pdf.set_font(family="Times", style="B", size=10)
+    pdf.set_text_color(80, 80, 80)
+    # if you want to put the cells empty (OPTION I)
+    #pdf.cell(w=30, h=8, txt=" ", align="C", border=1)  # cell 1 (empty)
+    #pdf.cell(w=50, h=8, txt=" ", align="C", border=1)  # cell 2 (empty)
+    #pdf.cell(w=50, h=8, txt=" ", align="C", border=1)  # cell 3 (empty)
+    #pdf.cell(w=30, h=8, txt=" ", align="C", border=1)  # cell 4 (empty)
+    #pdf.cell(w=30, h=8, txt=str(total_sum), align="C", ln=1, border=1)  # cell 5
+
+    # or (OPTION II) you can merge the empty cells as one cell , we put one cell width as total
+    # of the empty cells all together
+    pdf.cell(w=160, h=8, txt="TOTAL PRICE IN EUROS IS: ", align="L", border=1)  # cell 4 (empty)
+    pdf.cell(w=30, h=8, txt=str(total_sum), align="C", ln=1, border=1)  # cell 5
+
+    # To write “ The total due amount is 339 Euros “after the table
+    pdf.set_font(family="Times", style="B", size=20)
+    pdf.set_text_color(0, 0, 0)
+    pdf.cell(w=0, h=8, txt=f"The total due amount is {total_sum} Euros.", align="L", ln=1, border=0)
+
+    # Add company name and logo
+    pdf.set_font(family="Times", style="B", size=20)
+    pdf.set_text_color(0, 0, 0)
+    pdf.cell(w=70, h=10, txt="BIMATIC EUROPE", align="L", border=0)
+    pdf.image("logooo.jpg", w=10, h=10)
 
     # generating pdf file for each excel file
     pdf.output(f"PDFS/{filename}.pdf")
